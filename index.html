@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mappa Pro — Fan Platform Intelligence</title>
+<style>
+:root{
+  --bg:#020c1b;
+  --bg2:#040f22;
+  --blue:#1a5eb8;
+  --blue2:#2272e6;
+  --cyan:#00d4ff;
+  --purple:#a855f7;
+  --pink:#ec4899;
+  --green:#22c55e;
+  --text:#e8f0fe;
+  --muted:#6b84a8;
+  --card:#071428;
+  --border:rgba(26,94,184,.25);
+  --glow:0 0 40px rgba(0,212,255,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* ──── SCROLLBAR ──── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:2px}
+
+/* ──── NAV ──── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;height:64px;
+  background:rgba(2,12,27,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:all .3s;
+}
+.nav-logo{
+  font-size:1.25rem;font-weight:800;letter-spacing:-.5px;
+  background:linear-gradient(135deg,#fff 0%,var(--cyan) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:.9rem;
+  font-weight:500;transition:color .2s;
+}
+.nav-links a:hover{color:#fff}
+.nav-cta{
+  background:linear-gradient(135deg,var(--blue),var(--blue2));
+  color:#fff;border:none;padding:9px 22px;border-radius:8px;
+  font-weight:600;font-size:.875rem;cursor:pointer;
+  box-shadow:0 0 20px rgba(26,94,184,.4);
+  transition:all .2s;text-decoration:none;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(26,94,184,.6)}
+
+/* ──── HERO ──── */
+#hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;padding:80px 20px 60px;
+}
+#hero-canvas{
+  position:absolute;inset:0;z-index:0;
+}
+.hero-inner{
+  position:relative;z-index:1;
+  text-align:center;max-width:900px;margin:0 auto;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
+  padding:6px 16px;border-radius:100px;font-size:.8rem;
+  color:var(--cyan);letter-spacing:.05em;font-weight:600;
+  margin-bottom:28px;animation:fadeUp .8s ease both;
+}
+.hero-badge span{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+.hero-h1{
+  font-size:clamp(2.8rem,8vw,6rem);
+  font-weight:900;letter-spacing:-.04em;line-height:1.05;
+  animation:fadeUp .8s .1s ease both;
+}
+.hero-h1 .grad{
+  background:linear-gradient(135deg,#fff 0%,var(--cyan) 45%,var(--purple) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:block;
+}
+.hero-sub{
+  font-size:1.2rem;color:var(--muted);max-width:600px;margin:24px auto 0;
+  animation:fadeUp .8s .2s ease both;
+}
+.hero-actions{
+  display:flex;gap:16px;justify-content:center;flex-wrap:wrap;
+  margin-top:40px;animation:fadeUp .8s .3s ease both;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#fff;padding:14px 32px;border-radius:12px;
+  font-weight:700;font-size:1rem;cursor:pointer;
+  border:none;text-decoration:none;display:inline-block;
+  box-shadow:0 0 40px rgba(0,212,255,.3);
+  transition:all .25s;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(0,212,255,.5)}
+.btn-ghost{
+  background:transparent;color:#fff;
+  padding:14px 32px;border-radius:12px;
+  font-weight:600;font-size:1rem;cursor:pointer;
+  border:1px solid rgba(255,255,255,.15);
+  text-decoration:none;display:inline-block;
+  backdrop-filter:blur(10px);
+  transition:all .25s;
+}
+.btn-ghost:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.05)}
+
+/* hero stats */
+.hero-stats{
+  display:flex;gap:40px;justify-content:center;flex-wrap:wrap;
+  margin-top:64px;animation:fadeUp .8s .4s ease both;
+}
+.hero-stat .num{
+  font-size:2.4rem;font-weight:900;letter-spacing:-.04em;
+  background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-stat .lbl{font-size:.8rem;color:var(--muted);font-weight:500;margin-top:2px}
+
+/* ──── DASHBOARD PREVIEW ──── */
+#preview{
+  padding:80px 40px;position:relative;overflow:hidden;
+}
+.preview-wrap{
+  max-width:1100px;margin:0 auto;
+  position:relative;
+}
+.preview-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:600px;height:300px;
+  background:radial-gradient(ellipse,rgba(0,212,255,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.dashboard-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 0 80px rgba(0,0,0,.6),0 0 40px rgba(26,94,184,.1);
+  overflow:hidden;
+}
+.dash-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.dash-title{font-weight:700;font-size:1.1rem}
+.period-pills{display:flex;gap:6px}
+.period-pill{
+  padding:4px 12px;border-radius:100px;font-size:.75rem;font-weight:600;
+  background:rgba(255,255,255,.04);color:var(--muted);border:1px solid transparent;
+  cursor:pointer;transition:all .2s;
+}
+.period-pill.active{
+  background:rgba(0,212,255,.1);color:var(--cyan);
+  border-color:rgba(0,212,255,.3);
+}
+.kpi-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+  margin-bottom:28px;
+}
+.kpi{
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;padding:16px;
+}
+.kpi-val{
+  font-size:1.6rem;font-weight:900;letter-spacing:-.04em;
+  background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.kpi-lbl{font-size:.75rem;color:var(--muted);margin-top:4px}
+.kpi-change{font-size:.75rem;color:var(--green);font-weight:600;margin-top:6px}
+/* chart area */
+.chart-area{
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);
+  border-radius:12px;padding:20px;height:180px;position:relative;overflow:hidden;
+}
+.chart-label{font-size:.75rem;color:var(--muted);margin-bottom:12px;font-weight:600}
+#preview-chart{width:100%;height:140px}
+
+/* ──── SECTION TITLES ──── */
+.s-title{
+  text-align:center;margin-bottom:64px;
+}
+.s-eyebrow{
+  font-size:.8rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--cyan);margin-bottom:12px;
+}
+.s-h2{
+  font-size:clamp(2rem,5vw,3.2rem);font-weight:900;
+  letter-spacing:-.04em;line-height:1.1;
+}
+.s-h2 em{font-style:normal;color:var(--cyan)}
+.s-sub{font-size:1.05rem;color:var(--muted);max-width:520px;margin:16px auto 0}
+
+/* ──── FEATURES ──── */
+#features{padding:100px 40px}
+.features-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.feat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px;position:relative;overflow:hidden;
+  transition:transform .3s,border-color .3s,box-shadow .3s;
+  cursor:default;
+}
+.feat-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(0,212,255,.07) 0%,transparent 60%);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.feat-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(0,212,255,.3);
+  box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 30px rgba(0,212,255,.08);
+}
+.feat-card:hover::before{opacity:1}
+.feat-icon{
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:16px;
+  background:linear-gradient(135deg,rgba(26,94,184,.25),rgba(0,212,255,.15));
+  border:1px solid rgba(0,212,255,.15);
+}
+.feat-card h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
+.feat-card p{font-size:.875rem;color:var(--muted);line-height:1.6}
+.feat-tag{
+  display:inline-block;margin-top:14px;
+  padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:600;
+  background:rgba(0,212,255,.08);color:var(--cyan);
+  border:1px solid rgba(0,212,255,.15);
+}
+/* wide card */
+.feat-card.wide{grid-column:span 2}
+/* highlight card */
+.feat-card.hi{
+  background:linear-gradient(135deg,rgba(26,94,184,.18),rgba(0,212,255,.08));
+  border-color:rgba(0,212,255,.25);
+}
+
+/* ──── REVENUE SECTION ──── */
+#revenue{
+  padding:100px 40px;
+  background:linear-gradient(180deg,transparent 0%,rgba(0,212,255,.03) 50%,transparent 100%);
+  position:relative;overflow:hidden;
+}
+#revenue::before{
+  content:'';position:absolute;
+  width:800px;height:800px;
+  background:radial-gradient(circle,rgba(26,94,184,.08) 0%,transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+.rev-inner{max-width:1100px;margin:0 auto}
+.rev-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.rev-text h2{
+  font-size:clamp(2rem,4vw,2.8rem);font-weight:900;letter-spacing:-.04em;
+  line-height:1.15;margin-bottom:20px;
+}
+.rev-text p{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:28px}
+.rev-bullets{list-style:none;display:flex;flex-direction:column;gap:12px}
+.rev-bullets li{
+  display:flex;align-items:center;gap:12px;
+  font-size:.9rem;color:var(--text);
+}
+.rev-bullets li::before{
+  content:'✓';
+  width:20px;height:20px;background:rgba(34,197,94,.15);
+  color:var(--green);border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:.65rem;font-weight:900;flex-shrink:0;
+  border:1px solid rgba(34,197,94,.3);
+}
+.rev-chart-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px;
+  box-shadow:0 0 60px rgba(0,0,0,.5);
+}
+.rev-chart-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rev-chart-top span{font-size:.8rem;color:var(--muted);font-weight:600}
+.rev-total{
+  font-size:2.2rem;font-weight:900;letter-spacing:-.04em;
+  background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  margin-bottom:4px;
+}
+.rev-change{font-size:.8rem;color:var(--green);font-weight:600;margin-bottom:20px}
+#main-chart{width:100%;height:160px}
+
+/* ──── CHATTER SECTION ──── */
+#chatter{padding:100px 40px}
+.chatter-inner{max-width:1100px;margin:0 auto}
+.chatter-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.chatter-cards{display:flex;flex-direction:column;gap:14px}
+.ch-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:18px 20px;
+  display:flex;align-items:center;gap:16px;
+  transition:transform .3s,border-color .3s;
+}
+.ch-card:hover{transform:translateX(6px);border-color:rgba(168,85,247,.4)}
+.ch-avatar{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:700;flex-shrink:0;
+}
+.ch-info{flex:1}
+.ch-name{font-weight:700;font-size:.9rem}
+.ch-stats{display:flex;gap:16px;margin-top:6px}
+.ch-stat-item{font-size:.75rem;color:var(--muted)}
+.ch-stat-item strong{color:var(--text);font-weight:700}
+.ch-badge{
+  padding:3px 10px;border-radius:100px;font-size:.7rem;font-weight:700;
+}
+.badge-live{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.badge-off{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid rgba(255,255,255,.08)}
+.chatter-text h2{
+  font-size:clamp(2rem,4vw,2.8rem);font-weight:900;letter-spacing:-.04em;line-height:1.15;
+  margin-bottom:20px;
+}
+.chatter-text p{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:24px}
+.kpi-mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px}
+.kpi-mini{
+  background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.15);
+  border-radius:12px;padding:14px 16px;
+}
+.kpi-mini-val{font-size:1.5rem;font-weight:900;letter-spacing:-.04em;color:var(--purple)}
+.kpi-mini-lbl{font-size:.72rem;color:var(--muted);margin-top:3px}
+
+/* ──── ACCOUNTS / FAN INTEL ──── */
+#accounts{
+  padding:100px 40px;
+  background:linear-gradient(180deg,transparent,rgba(168,85,247,.04) 50%,transparent);
+}
+.accounts-inner{max-width:1100px;margin:0 auto}
+.acct-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  margin-top:24px;
+}
+.acct-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:24px;
+  transition:transform .3s,border-color .3s;
+}
+.acct-card:hover{transform:translateY(-4px);border-color:rgba(168,85,247,.35)}
+.acct-avatar{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;font-weight:700;margin-bottom:14px;
+}
+.acct-name{font-weight:700;font-size:1rem}
+.acct-handle{font-size:.8rem;color:var(--muted);margin-bottom:14px}
+.acct-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.acct-kpi{
+  background:rgba(255,255,255,.03);border-radius:8px;padding:10px 12px;
+}
+.acct-kpi-val{font-size:1.1rem;font-weight:800;letter-spacing:-.03em}
+.acct-kpi-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+
+/* ──── STATS BAR ──── */
+#stats-bar{
+  padding:80px 40px;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  background:var(--card);
+}
+.stats-bar-inner{
+  max-width:1000px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:40px;text-align:center;
+}
+.sb-stat .num{
+  font-size:3rem;font-weight:900;letter-spacing:-.05em;
+  background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:block;
+}
+.sb-stat .lbl{font-size:.85rem;color:var(--muted);font-weight:500;margin-top:6px}
+
+/* ──── PRICING ──── */
+#pricing{padding:100px 40px;position:relative;overflow:hidden}
+#pricing::before{
+  content:'';position:absolute;
+  width:600px;height:600px;border-radius:50%;
+  background:radial-gradient(circle,rgba(168,85,247,.08),transparent 70%);
+  top:-100px;right:-100px;pointer-events:none;
+}
+.pricing-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.price-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:24px;padding:32px;
+  transition:transform .3s,box-shadow .3s;
+  position:relative;overflow:hidden;
+}
+.price-card::after{
+  content:'';position:absolute;inset:0;border-radius:24px;
+  background:linear-gradient(135deg,rgba(0,212,255,.04),transparent);
+  pointer-events:none;opacity:0;transition:opacity .3s;
+}
+.price-card:hover{transform:translateY(-6px)}
+.price-card:hover::after{opacity:1}
+.price-card.featured{
+  border-color:rgba(0,212,255,.4);
+  box-shadow:0 0 60px rgba(0,212,255,.12),0 0 120px rgba(0,212,255,.06);
+}
+.price-card.featured::after{opacity:1}
+.plan-badge{
+  display:inline-block;padding:4px 12px;border-radius:100px;
+  font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;
+  margin-bottom:16px;
+}
+.plan-name{font-size:1.2rem;font-weight:800;margin-bottom:8px}
+.plan-price{
+  font-size:3rem;font-weight:900;letter-spacing:-.05em;
+  background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.plan-period{font-size:.85rem;color:var(--muted);margin-left:4px;font-weight:500}
+.plan-desc{font-size:.875rem;color:var(--muted);margin:12px 0 24px;line-height:1.6}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan-features li{
+  display:flex;align-items:flex-start;gap:10px;font-size:.875rem;color:var(--text);
+}
+.plan-features li::before{
+  content:'✓';color:var(--cyan);font-weight:900;font-size:.8rem;
+  margin-top:2px;flex-shrink:0;
+}
+.plan-btn{
+  width:100%;padding:13px;border-radius:12px;
+  font-weight:700;font-size:.95rem;cursor:pointer;
+  border:1px solid rgba(255,255,255,.12);
+  background:transparent;color:#fff;
+  transition:all .25s;
+}
+.plan-btn:hover{background:rgba(255,255,255,.06)}
+.plan-btn.primary{
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border-color:transparent;
+  box-shadow:0 0 30px rgba(0,212,255,.25);
+}
+.plan-btn.primary:hover{box-shadow:0 0 50px rgba(0,212,255,.4)}
+
+/* ──── TESTIMONIALS ──── */
+#testimonials{
+  padding:100px 40px;
+  background:linear-gradient(180deg,transparent,rgba(26,94,184,.04) 50%,transparent);
+}
+.testi-grid{
+  max-width:1100px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+}
+.testi-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:28px;
+  transition:transform .3s;
+}
+.testi-card:hover{transform:translateY(-3px)}
+.testi-stars{color:#f59e0b;font-size:1rem;margin-bottom:14px;letter-spacing:2px}
+.testi-text{font-size:.9rem;line-height:1.7;color:var(--text);margin-bottom:20px;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:12px}
+.testi-ava{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:700;
+}
+.testi-name{font-weight:700;font-size:.875rem}
+.testi-role{font-size:.75rem;color:var(--muted);margin-top:2px}
+
+/* ──── CTA ──── */
+#cta{
+  padding:120px 40px;text-align:center;position:relative;overflow:hidden;
+}
+#cta::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(0,212,255,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+.cta-inner{position:relative;z-index:1;max-width:700px;margin:0 auto}
+.cta-inner h2{
+  font-size:clamp(2.2rem,5vw,3.5rem);font-weight:900;letter-spacing:-.04em;
+  line-height:1.1;margin-bottom:20px;
+}
+.cta-inner p{font-size:1.1rem;color:var(--muted);margin-bottom:40px;line-height:1.6}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* ──── FOOTER ──── */
+footer{
+  border-top:1px solid var(--border);
+  padding:48px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:20px;
+}
+.foot-logo{
+  font-size:1.1rem;font-weight:800;
+  background:linear-gradient(135deg,#fff,var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.foot-links{display:flex;gap:24px;flex-wrap:wrap}
+.foot-links a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.foot-links a:hover{color:#fff}
+.foot-copy{font-size:.8rem;color:var(--muted)}
+
+/* ──── SCROLL REVEAL ──── */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:opacity .7s ease,transform .7s ease}
+.reveal-left.visible{opacity:1;transform:none}
+.reveal-right{opacity:0;transform:translateX(40px);transition:opacity .7s ease,transform .7s ease}
+.reveal-right.visible{opacity:1;transform:none}
+.stagger>*{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.stagger.visible>*:nth-child(1){opacity:1;transform:none;transition-delay:.0s}
+.stagger.visible>*:nth-child(2){opacity:1;transform:none;transition-delay:.1s}
+.stagger.visible>*:nth-child(3){opacity:1;transform:none;transition-delay:.2s}
+.stagger.visible>*:nth-child(4){opacity:1;transform:none;transition-delay:.3s}
+.stagger.visible>*:nth-child(5){opacity:1;transform:none;transition-delay:.4s}
+.stagger.visible>*:nth-child(6){opacity:1;transform:none;transition-delay:.5s}
+.stagger.visible>*:nth-child(7){opacity:1;transform:none;transition-delay:.6s}
+.stagger.visible>*:nth-child(8){opacity:1;transform:none;transition-delay:.7s}
+.stagger.visible>*:nth-child(9){opacity:1;transform:none;transition-delay:.8s}
+
+/* ──── KEYFRAMES ──── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+@keyframes countUp{from{opacity:0}to{opacity:1}}
+@keyframes drawLine{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ──── RESPONSIVE ──── */
+@media(max-width:900px){
+  .features-grid{grid-template-columns:1fr 1fr}
+  .feat-card.wide{grid-column:span 1}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .rev-layout,.chatter-layout{grid-template-columns:1fr}
+  .acct-grid{grid-template-columns:1fr 1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .stats-bar-inner{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr}
+  nav{padding:0 20px}
+  .nav-links{display:none}
+  footer{flex-direction:column;text-align:center}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr}
+  .acct-grid{grid-template-columns:1fr}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  #features,#revenue,#chatter,#accounts,#pricing,#testimonials,#cta{padding:60px 20px}
+  #preview{padding:40px 20px}
+  .stats-bar-inner{grid-template-columns:1fr 1fr;gap:24px}
+}
+
+/* ──── MORPHING BLOB ──── */
+.blob{
+  position:absolute;border-radius:50%;filter:blur(80px);
+  pointer-events:none;animation:blobMove 12s ease-in-out infinite;
+}
+@keyframes blobMove{
+  0%,100%{transform:translate(0,0) scale(1)}
+  33%{transform:translate(30px,-20px) scale(1.05)}
+  66%{transform:translate(-20px,30px) scale(.95)}
+}
+
+/* ──── MARQUEE ──── */
+.marquee-wrap{
+  padding:20px 0;overflow:hidden;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:rgba(0,212,255,.02);
+  margin:0;
+}
+.marquee-track{
+  display:flex;gap:0;white-space:nowrap;
+  animation:marquee 30s linear infinite;
+}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.marquee-item{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:0 28px;font-size:.8rem;font-weight:600;
+  color:var(--muted);letter-spacing:.04em;
+}
+.marquee-dot{width:4px;height:4px;background:var(--cyan);border-radius:50%;flex-shrink:0}
+
+/* ──── GLITCH EFFECT on H1 ──── */
+.grad-glow{
+  text-shadow:0 0 80px rgba(0,212,255,.3);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Mappa Pro</div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#revenue">Analytics</a></li>
+    <li><a href="#chatter">Teams</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="docs.html">Docs</a></li>
+  </ul>
+  <a href="#pricing" class="nav-cta">Get Started →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+
+  <!-- Blobs -->
+  <div class="blob" style="width:400px;height:400px;background:rgba(26,94,184,.18);top:10%;left:5%;animation-duration:14s"></div>
+  <div class="blob" style="width:300px;height:300px;background:rgba(0,212,255,.1);bottom:15%;right:8%;animation-duration:10s;animation-delay:-4s"></div>
+  <div class="blob" style="width:200px;height:200px;background:rgba(168,85,247,.12);top:50%;left:60%;animation-duration:16s;animation-delay:-7s"></div>
+
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span></span>
+      Live Platform Intelligence
+    </div>
+    <h1 class="hero-h1">
+      Your fan platform.<br>
+      <span class="grad grad-glow">Fully visible.</span>
+    </h1>
+    <p class="hero-sub">Real-time earnings, chatter performance, fan intelligence, and team management — all in one command center for serious creators.</p>
+    <div class="hero-actions">
+      <a href="#pricing" class="btn-primary">Start Free Trial</a>
+      <a href="#features" class="btn-ghost">See Features →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num" data-count="847" data-prefix="$" data-suffix="K">$0K</div>
+        <div class="lbl">Avg. monthly revenue tracked</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" data-count="12400" data-suffix="">0</div>
+        <div class="lbl">Fan interactions managed</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" data-count="98" data-suffix="%">0%</div>
+        <div class="lbl">Message response rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee-track">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- DASHBOARD PREVIEW -->
+<section id="preview">
+  <div class="preview-wrap reveal">
+    <div class="preview-glow"></div>
+    <div class="dashboard-card">
+      <div class="dash-header">
+        <div class="dash-title">Overview — All Accounts</div>
+        <div class="period-pills">
+          <div class="period-pill">Today</div>
+          <div class="period-pill active">7d</div>
+          <div class="period-pill">30d</div>
+          <div class="period-pill">Year</div>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-val">$24,180</div>
+          <div class="kpi-lbl">Total Revenue</div>
+          <div class="kpi-change">↑ 18.4%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val">3,241</div>
+          <div class="kpi-lbl">Subscribers</div>
+          <div class="kpi-change">↑ 5.2%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val">412</div>
+          <div class="kpi-lbl">New Fans</div>
+          <div class="kpi-change">↑ 23.1%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val">6</div>
+          <div class="kpi-lbl">Active Accounts</div>
+          <div class="kpi-change">↑ All healthy</div>
+        </div>
+      </div>
+      <div class="chart-area">
+        <div class="chart-label">Revenue — Last 7 Days</div>
+        <svg id="preview-chart" viewBox="0 0 700 120" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#00d4ff" stop-opacity=".25"/>
+              <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path id="chart-fill" fill="url(#cg)" opacity=".7"/>
+          <path id="chart-line" fill="none" stroke="#00d4ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="s-title reveal">
+    <div class="s-eyebrow">Everything you need</div>
+    <h2 class="s-h2">Built for creators who<br><em>mean business</em></h2>
+    <p class="s-sub">Every feature you need to run a professional fan platform operation — none of the bloat.</p>
+  </div>
+  <div class="features-grid stagger">
+
+    <div class="feat-card hi">
+      <div class="feat-icon">📊</div>
+      <h3>Real-Time Analytics</h3>
+      <p>Earnings, subscriptions, renewals, and PPV revenue across all accounts. Chunked, cursor-paginated Fanvue data updated live with 8 selectable time periods.</p>
+      <span class="feat-tag">Analytics</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">💬</div>
+      <h3>Unified Inbox</h3>
+      <p>All fan conversations from every connected account in one view. Filter by account, unread, or VIP fans. Reply without switching tabs.</p>
+      <span class="feat-tag">Messaging</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">🏆</div>
+      <h3>Top Spenders</h3>
+      <p>See your highest-value fans ranked by gross spend. Display names, handles, avatars, and exact amounts — straight from Fanvue.</p>
+      <span class="feat-tag">Fan Intel</span>
+    </div>
+
+    <div class="feat-card wide">
+      <div class="feat-icon">⏱️</div>
+      <h3>Chatter Performance Tracking</h3>
+      <p>Clock-in/clock-out shifts, message volume, fans messaged, PPV revenue generated per chatter, and avg response time. Full KPI dashboard per team member so you know who's performing — and who isn't.</p>
+      <span class="feat-tag">Teams</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <h3>Earnings & Payouts</h3>
+      <p>Gross and net breakdowns, commission calculator with adjustable rate, per-chatter payouts — all in one tab.</p>
+      <span class="feat-tag">Finance</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">📨</div>
+      <h3>Mass Messages</h3>
+      <p>Send personalized bulk messages to your fan list across any connected account. PPV-ready with scheduling support.</p>
+      <span class="feat-tag">Messaging</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">👥</div>
+      <h3>Team Management</h3>
+      <p>Invite chatters and managers by email. Role-based access — Owners see everything, Chatters see only their accounts. Secure set-password onboarding flow.</p>
+      <span class="feat-tag">Teams</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">🔗</div>
+      <h3>Multi-Account Management</h3>
+      <p>Connect and manage multiple Fanvue creator accounts under one roof. Switch instantly, view consolidated or per-account analytics.</p>
+      <span class="feat-tag">Accounts</span>
+    </div>
+
+    <div class="feat-card hi">
+      <div class="feat-icon">🧠</div>
+      <h3>Fan Intelligence</h3>
+      <p>Fan notes, subscription history, VIP tagging, and spend analysis give you everything you need to personalize every interaction and maximize LTV.</p>
+      <span class="feat-tag">Fan Intel</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- REVENUE SECTION -->
+<section id="revenue">
+  <div class="rev-inner">
+    <div class="rev-layout">
+      <div class="rev-text reveal-left">
+        <div class="s-eyebrow" style="text-align:left;margin-bottom:12px">Analytics & Earnings</div>
+        <h2>Know exactly where every<br>dollar comes from.</h2>
+        <p>Stop guessing which accounts, chatters, or fans drive the most revenue. Mappa Pro surfaces gross earnings, subscription revenue, PPV, renewals, and chatter-attributed income — broken down however you need it.</p>
+        <ul class="rev-bullets">
+          <li>Gross vs net toggle with live commission math</li>
+          <li>8 selectable time periods from today to all-time</li>
+          <li>Per-account and consolidated earnings view</li>
+          <li>Top spenders ranked by spend</li>
+          <li>Daily subscriber chart with gain/loss history</li>
+          <li>Chatter-attributed PPV revenue tracking</li>
+        </ul>
+      </div>
+      <div class="rev-chart-wrap reveal-right">
+        <div class="rev-chart-top">
+          <span>Total Revenue · 30d</span>
+          <span style="color:var(--green);font-weight:700">↑ 22.4%</span>
+        </div>
+        <div class="rev-total" id="rev-total">$0</div>
+        <div class="rev-change">+$14,280 vs last period</div>
+        <svg id="main-chart" viewBox="0 0 500 140" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="mg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#00d4ff" stop-opacity=".3"/>
+              <stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path id="main-fill" fill="url(#mg)" opacity=".8"/>
+          <path id="main-line" fill="none" stroke="url(#lg2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1200" stroke-dashoffset="1200"/>
+          <defs>
+            <linearGradient id="lg2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#1a5eb8"/>
+              <stop offset="100%" stop-color="#00d4ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <span style="font-size:.7rem;color:var(--muted)">Feb 14</span>
+          <span style="font-size:.7rem;color:var(--muted)">Mar 16</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHATTER SECTION -->
+<section id="chatter">
+  <div class="chatter-inner">
+    <div class="chatter-layout">
+      <div class="chatter-cards reveal-left">
+        <div class="ch-card">
+          <div class="ch-avatar" style="background:linear-gradient(135deg,#1a5eb8,#00d4ff)">JR</div>
+          <div class="ch-info">
+            <div class="ch-name">Jordan R.</div>
+            <div class="ch-stats">
+              <div class="ch-stat-item"><strong>6.2h</strong> today</div>
+              <div class="ch-stat-item"><strong>184</strong> msgs</div>
+              <div class="ch-stat-item"><strong>$820</strong> PPV</div>
+            </div>
+          </div>
+          <span class="ch-badge badge-live">● Live</span>
+        </div>
+        <div class="ch-card">
+          <div class="ch-avatar" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">MK</div>
+          <div class="ch-info">
+            <div class="ch-name">Maya K.</div>
+            <div class="ch-stats">
+              <div class="ch-stat-item"><strong>4.8h</strong> today</div>
+              <div class="ch-stat-item"><strong>211</strong> msgs</div>
+              <div class="ch-stat-item"><strong>$1,240</strong> PPV</div>
+            </div>
+          </div>
+          <span class="ch-badge badge-live">● Live</span>
+        </div>
+        <div class="ch-card">
+          <div class="ch-avatar" style="background:linear-gradient(135deg,#0f766e,#22c55e)">AL</div>
+          <div class="ch-info">
+            <div class="ch-name">Alex L.</div>
+            <div class="ch-stats">
+              <div class="ch-stat-item"><strong>0h</strong> today</div>
+              <div class="ch-stat-item"><strong>—</strong> msgs</div>
+              <div class="ch-stat-item"><strong>$0</strong> PPV</div>
+            </div>
+          </div>
+          <span class="ch-badge badge-off">Offline</span>
+        </div>
+        <div class="ch-card">
+          <div class="ch-avatar" style="background:linear-gradient(135deg,#dc2626,#f97316)">TW</div>
+          <div class="ch-info">
+            <div class="ch-name">Tyler W.</div>
+            <div class="ch-stats">
+              <div class="ch-stat-item"><strong>7.1h</strong> today</div>
+              <div class="ch-stat-item"><strong>302</strong> msgs</div>
+              <div class="ch-stat-item"><strong>$2,100</strong> PPV</div>
+            </div>
+          </div>
+          <span class="ch-badge badge-live">● Live</span>
+        </div>
+      </div>
+      <div class="chatter-text reveal-right">
+        <div class="s-eyebrow" style="text-align:left;margin-bottom:12px">Chatter Performance</div>
+        <h2>See every chatter's<br>output in real time.</h2>
+        <p>Clock-in/out time tracking, live message counts, fan engagement stats, and PPV revenue attributed per chatter. Know your top performers and hold everyone accountable — every shift, every day.</p>
+        <div class="kpi-mini-grid">
+          <div class="kpi-mini">
+            <div class="kpi-mini-val">4.2m</div>
+            <div class="kpi-mini-lbl">Avg. response time</div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-val">38/h</div>
+            <div class="kpi-mini-lbl">Messages per hour</div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-val">$4,160</div>
+            <div class="kpi-mini-lbl">PPV today (team)</div>
+          </div>
+          <div class="kpi-mini">
+            <div class="kpi-mini-val">3/4</div>
+            <div class="kpi-mini-lbl">Chatters online now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCOUNTS -->
+<section id="accounts">
+  <div class="accounts-inner">
+    <div class="s-title reveal">
+      <div class="s-eyebrow">Multi-Account Control</div>
+      <h2 class="s-h2">All your creators.<br>One <em>command center</em>.</h2>
+      <p class="s-sub">Connect every Fanvue account to Mappa Pro and get a live feed of performance across your entire roster.</p>
+    </div>
+    <div class="acct-grid stagger">
+      <div class="acct-card">
+        <div class="acct-avatar">SC</div>
+        <div class="acct-name">StellaC</div>
+        <div class="acct-handle">@stellac · Fanvue</div>
+        <div class="acct-kpis">
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--cyan)">$8,420</div><div class="acct-kpi-lbl">Revenue (30d)</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--green)">1,240</div><div class="acct-kpi-lbl">Subscribers</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--purple)">$2,100</div><div class="acct-kpi-lbl">PPV (30d)</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:#f59e0b">+82</div><div class="acct-kpi-lbl">New this month</div></div>
+        </div>
+      </div>
+      <div class="acct-card">
+        <div class="acct-avatar" style="background:linear-gradient(135deg,var(--purple),var(--pink))">NV</div>
+        <div class="acct-name">Nova V.</div>
+        <div class="acct-handle">@novav · Fanvue</div>
+        <div class="acct-kpis">
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--cyan)">$6,180</div><div class="acct-kpi-lbl">Revenue (30d)</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--green)">890</div><div class="acct-kpi-lbl">Subscribers</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--purple)">$1,640</div><div class="acct-kpi-lbl">PPV (30d)</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:#f59e0b">+54</div><div class="acct-kpi-lbl">New this month</div></div>
+        </div>
+      </div>
+      <div class="acct-card">
+        <div class="acct-avatar" style="background:linear-gradient(135deg,#0f766e,#22c55e)">KR</div>
+        <div class="acct-name">Kira R.</div>
+        <div class="acct-handle">@kirar · Fanvue</div>
+        <div class="acct-kpis">
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--cyan)">$9,580</div><div class="acct-kpi-lbl">Revenue (30d)</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--green)">1,580</div><div class="acct-kpi-lbl">Subscribers</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:var(--purple)">$3,420</div><div class="acct-kpi-lbl">PPV (30d)</div></div>
+          <div class="acct-kpi"><div class="acct-kpi-val" style="color:#f59e0b">+118</div><div class="acct-kpi-lbl">New this month</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<section id="stats-bar">
+  <div class="stats-bar-inner stagger">
+    <div class="sb-stat">
+      <span class="num" data-count="2400000" data-prefix="$">$0</span>
+      <div class="lbl">Revenue tracked monthly</div>
+    </div>
+    <div class="sb-stat">
+      <span class="num" data-count="500" data-suffix="+">0+</span>
+      <div class="lbl">Creator accounts managed</div>
+    </div>
+    <div class="sb-stat">
+      <span class="num" data-count="99.9" data-suffix="%" data-dec="1">0%</span>
+      <div class="lbl">Platform uptime</div>
+    </div>
+    <div class="sb-stat">
+      <span class="num" data-count="4" data-suffix="m avg">0m avg</span>
+      <div class="lbl">Chatter response time</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="s-title reveal">
+    <div class="s-eyebrow">Simple pricing</div>
+    <h2 class="s-h2">Scale your operation.<br><em>Not your overhead</em>.</h2>
+    <p class="s-sub">Every plan includes every feature. No hidden fees. Cancel anytime.</p>
+  </div>
+  <div class="pricing-grid stagger">
+    <div class="price-card">
+      <div class="plan-name">Starter</div>
+      <div>
+        <span class="plan-price">$49</span>
+        <span class="plan-period">/ month</span>
+      </div>
+      <p class="plan-desc">Perfect for solo creators getting serious about their fan platform business.</p>
+      <ul class="plan-features">
+        <li>Up to 2 Fanvue accounts</li>
+        <li>Full analytics dashboard</li>
+        <li>Unified inbox</li>
+        <li>Top spenders + fan notes</li>
+        <li>2 team members</li>
+        <li>Email support</li>
+      </ul>
+      <button class="plan-btn">Get Started</button>
+    </div>
+
+    <div class="price-card featured">
+      <div class="plan-badge">Most Popular</div>
+      <div class="plan-name">Agency</div>
+      <div>
+        <span class="plan-price">$149</span>
+        <span class="plan-period">/ month</span>
+      </div>
+      <p class="plan-desc">Built for agencies managing multiple creators with a dedicated chatter team.</p>
+      <ul class="plan-features">
+        <li>Up to 10 Fanvue accounts</li>
+        <li>Chatter performance tracking</li>
+        <li>Clock-in/out shift system</li>
+        <li>Commission calculator</li>
+        <li>Mass messaging</li>
+        <li>Earnings & Payouts tab</li>
+        <li>10 team members</li>
+        <li>Priority support</li>
+      </ul>
+      <button class="plan-btn primary">Get Started</button>
+    </div>
+
+    <div class="price-card">
+      <div class="plan-name">Enterprise</div>
+      <div>
+        <span class="plan-price">$399</span>
+        <span class="plan-period">/ month</span>
+      </div>
+      <p class="plan-desc">For large agencies running high-volume operations across many creators.</p>
+      <ul class="plan-features">
+        <li>Unlimited Fanvue accounts</li>
+        <li>Unlimited team members</li>
+        <li>All Agency features</li>
+        <li>CSV exports</li>
+        <li>Custom commission rules</li>
+        <li>Dedicated account manager</li>
+        <li>SLA & uptime guarantee</li>
+      </ul>
+      <button class="plan-btn">Contact Sales</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="s-title reveal">
+    <div class="s-eyebrow">What agencies say</div>
+    <h2 class="s-h2">The teams that switched<br><em>don't go back</em>.</h2>
+  </div>
+  <div class="testi-grid stagger">
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"We went from manually tracking chatter hours in spreadsheets to having a live dashboard showing every shift, message count, and PPV generated. The commission tab alone saves us 4 hours a week."</p>
+      <div class="testi-author">
+        <div class="testi-ava">DM</div>
+        <div>
+          <div class="testi-name">Derek M.</div>
+          <div class="testi-role">Owner — 8-creator agency</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"The top spenders feature changed how we approach our highest-value fans completely. We know exactly who to prioritize and what they spend — and it shows in our numbers."</p>
+      <div class="testi-author">
+        <div class="testi-ava" style="background:linear-gradient(135deg,var(--purple),var(--pink))">SL</div>
+        <div>
+          <div class="testi-name">Sofia L.</div>
+          <div class="testi-role">Manager — 3-creator operation</div>
+        </div>
+      </div>
+    </div>
+    <div class="testi-card">
+      <div class="testi-stars">★★★★★</div>
+      <p class="testi-text">"I manage 6 accounts. Before Mappa Pro, I was logging into each one individually. Now I see everything in one place and my whole team is on it. Game changer."</p>
+      <div class="testi-author">
+        <div class="testi-ava" style="background:linear-gradient(135deg,#0f766e,#22c55e)">RT</div>
+        <div>
+          <div class="testi-name">Ryan T.</div>
+          <div class="testi-role">Founder — talent management firm</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-inner reveal">
+    <h2>Ready to see your<br>whole operation clearly?</h2>
+    <p>Start your free trial today. No credit card required. Connect your first account in under 2 minutes.</p>
+    <div class="cta-actions">
+      <a href="#pricing" class="btn-primary">Start Free Trial</a>
+      <a href="docs.html" class="btn-ghost">Read the Docs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">Mappa Pro</div>
+  <div class="foot-links">
+    <a href="#features">Features</a>
+    <a href="#pricing">Pricing</a>
+    <a href="docs.html">Docs</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+  <div class="foot-copy">© 2026 Mappa Pro. All rights reserved.</div>
+</footer>
+
+<script>
+// ──── CANVAS PARTICLE MESH ────
+(function(){
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let W,H,particles=[],mouse={x:-9999,y:-9999};
+  const COUNT=90,LINK_DIST=130,MOUSE_DIST=160;
+
+  function resize(){
+    W=canvas.width=canvas.offsetWidth;
+    H=canvas.height=canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize',resize);
+
+  function Particle(){
+    this.x=Math.random()*W;
+    this.y=Math.random()*H;
+    this.vx=(Math.random()-.5)*.4;
+    this.vy=(Math.random()-.5)*.4;
+    this.r=Math.random()*1.5+.5;
+  }
+  Particle.prototype.update=function(){
+    this.x+=this.vx; this.y+=this.vy;
+    if(this.x<0||this.x>W) this.vx*=-1;
+    if(this.y<0||this.y>H) this.vy*=-1;
+    // mouse repel
+    const dx=this.x-mouse.x,dy=this.y-mouse.y;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<MOUSE_DIST){
+      const f=(MOUSE_DIST-d)/MOUSE_DIST*.3;
+      this.vx+=dx/d*f; this.vy+=dy/d*f;
+      const speed=Math.sqrt(this.vx*this.vx+this.vy*this.vy);
+      if(speed>1.5){this.vx=this.vx/speed*1.5;this.vy=this.vy/speed*1.5;}
+    }
+  };
+
+  for(let i=0;i<COUNT;i++) particles.push(new Particle());
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    for(let i=0;i<particles.length;i++){
+      particles[i].update();
+      const p=particles[i];
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,212,255,.6)';
+      ctx.fill();
+      for(let j=i+1;j<particles.length;j++){
+        const q=particles[j];
+        const dx=p.x-q.x,dy=p.y-q.y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<LINK_DIST){
+          const alpha=(1-d/LINK_DIST)*.18;
+          ctx.beginPath();
+          ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle=`rgba(26,94,184,${alpha})`;
+          ctx.lineWidth=.8;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  document.getElementById('hero').addEventListener('mousemove',e=>{
+    const r=canvas.getBoundingClientRect();
+    mouse.x=e.clientX-r.left; mouse.y=e.clientY-r.top;
+  });
+  document.getElementById('hero').addEventListener('mouseleave',()=>{
+    mouse.x=-9999; mouse.y=-9999;
+  });
+})();
+
+// ──── MARQUEE ────
+(function(){
+  const items=[
+    'Real-Time Analytics','Chatter Performance','Unified Inbox',
+    'Top Spenders','Mass Messages','Commission Tracking',
+    'Fan Intelligence','Multi-Account','Earnings & Payouts',
+    'Shift Tracking','PPV Revenue','Subscriber Analytics'
+  ];
+  const track=document.getElementById('marquee-track');
+  const doubled=[...items,...items,...items,...items];
+  doubled.forEach(t=>{
+    const el=document.createElement('span');
+    el.className='marquee-item';
+    el.innerHTML=`<span class="marquee-dot"></span>${t}`;
+    track.appendChild(el);
+  });
+})();
+
+// ──── PREVIEW CHART (static sparkline) ────
+(function(){
+  const pts=[22,41,38,67,55,78,92];
+  function buildChart(svgId,fillId,lineId,vw,vh){
+    const svg=document.getElementById(svgId);
+    if(!svg) return;
+    const n=pts.length;
+    const mx=Math.max(...pts),mn=Math.min(...pts);
+    const coords=pts.map((v,i)=>[
+      i/(n-1)*vw,
+      vh-(v-mn)/(mx-mn)*(vh-10)-5
+    ]);
+    const line=coords.map((c,i)=>(i?'L':'M')+c[0]+','+c[1]).join(' ');
+    const fill=line+` L${vw},${vh} L0,${vh} Z`;
+    document.getElementById(fillId).setAttribute('d',fill);
+    document.getElementById(lineId).setAttribute('d',line);
+  }
+  buildChart('preview-chart','chart-fill','chart-line',700,120);
+})();
+
+// ──── MAIN REVENUE CHART (animated draw) ────
+(function(){
+  const vals=[18,24,21,35,41,33,55,48,60,52,72,68,78,85,74,90,88,96,82,100,94,108,102,118,112,124,130,140,132,148];
+  const mx=Math.max(...vals),mn=Math.min(...vals);
+  const VW=500,VH=140,PAD=10;
+  function coords(){
+    return vals.map((v,i)=>[
+      i/(vals.length-1)*VW,
+      VH-(v-mn)/(mx-mn)*(VH-PAD*2)-PAD
+    ]);
+  }
+  const c=coords();
+  const line=c.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const fill=line+` L${VW},${VH} L0,${VH} Z`;
+  document.getElementById('main-fill').setAttribute('d',fill);
+  document.getElementById('main-line').setAttribute('d',line);
+
+  // animate the stroke on reveal
+  let drawn=false;
+  const observer=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting && !drawn){
+      drawn=true;
+      document.getElementById('main-line').style.transition='stroke-dashoffset 2s ease';
+      document.getElementById('main-line').style.strokeDashoffset='0';
+      // count up revenue
+      countUpEl(document.getElementById('rev-total'),78420,'$',0,'');
+    }
+  },{threshold:.3});
+  const wrap=document.getElementById('main-chart');
+  if(wrap) observer.observe(wrap);
+})();
+
+// ──── COUNT-UP ────
+function countUpEl(el,target,prefix,decimals,suffix,dur){
+  dur=dur||1800;
+  const start=performance.now();
+  const update=now=>{
+    const t=Math.min((now-start)/dur,1);
+    const ease=1-Math.pow(1-t,3);
+    const val=target*ease;
+    el.textContent=(prefix||'')+(decimals?val.toFixed(decimals):Math.round(val).toLocaleString())+(suffix||'');
+    if(t<1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+// ──── SCROLL REVEAL ────
+const revealObserver=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // trigger count-ups on stat elements
+      e.target.querySelectorAll('[data-count]').forEach(el=>{
+        if(el.dataset.counted) return;
+        el.dataset.counted='1';
+        const target=parseFloat(el.dataset.count);
+        const prefix=el.dataset.prefix||'';
+        const suffix=el.dataset.suffix||'';
+        const dec=parseInt(el.dataset.dec)||0;
+        countUpEl(el,target,prefix,dec,suffix);
+      });
+    }
+  });
+},{threshold:.15});
+
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.stagger').forEach(el=>{
+  revealObserver.observe(el);
+});
+
+// also handle hero stats (in viewport from start)
+setTimeout(()=>{
+  document.querySelectorAll('.hero-stat .num[data-count]').forEach(el=>{
+    if(el.dataset.counted) return;
+    el.dataset.counted='1';
+    const target=parseFloat(el.dataset.count);
+    const prefix=el.dataset.prefix||'';
+    const suffix=el.dataset.suffix||'';
+    countUpEl(el,target,prefix,0,suffix,1400);
+  });
+},600);
+
+// ──── FEAT CARD MOUSE GLOW ────
+document.querySelectorAll('.feat-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width*100).toFixed(1)+'%';
+    const y=((e.clientY-r.top)/r.height*100).toFixed(1)+'%';
+    card.style.setProperty('--mx',x);
+    card.style.setProperty('--my',y);
+  });
+});
+
+// ──── NAV SCROLL EFFECT ────
+window.addEventListener('scroll',()=>{
+  const nav=document.querySelector('nav');
+  if(window.scrollY>60){
+    nav.style.background='rgba(2,12,27,.97)';
+    nav.style.borderBottomColor='rgba(26,94,184,.4)';
+  } else {
+    nav.style.background='rgba(2,12,27,.85)';
+    nav.style.borderBottomColor='rgba(26,94,184,.25)';
+  }
+});
+</script>
+</body>
+</html>

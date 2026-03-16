@@ -127,44 +127,109 @@ nav{
 .btn-ghost:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04)}
 
 /* ── HERO DASHBOARD MOCKUP ── */
+@property --gb-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+
 .hero-mockup{
   position:relative;z-index:1;
   animation:fadeUp .8s .15s ease both;
-  perspective:1000px;
+  perspective:1200px;
 }
+/* aurora canvas sits behind the window */
+#aurora-canvas{
+  position:absolute;
+  inset:-80px;
+  z-index:0;
+  pointer-events:none;
+  border-radius:50%;
+  filter:blur(40px);
+  opacity:.7;
+}
+/* spinning gradient border ring */
+.mock-border-ring{
+  position:absolute;inset:-2px;border-radius:18px;
+  background:conic-gradient(from var(--gb-angle),
+    transparent 55%,
+    rgba(91,91,214,.95) 65%,
+    rgba(139,92,246,1) 75%,
+    rgba(34,211,238,.95) 84%,
+    rgba(236,72,153,.5) 90%,
+    transparent 100%
+  );
+  animation:gb-spin 3.5s linear infinite;
+  z-index:0;
+}
+@keyframes gb-spin{to{--gb-angle:360deg}}
+
+/* outer ambient glow pulses */
+.mock-glow-outer{
+  position:absolute;inset:-20px;border-radius:28px;
+  background:radial-gradient(ellipse,rgba(91,91,214,.2) 0%,transparent 70%);
+  animation:glowPulse 3s ease-in-out infinite;
+  z-index:0;pointer-events:none;
+}
+@keyframes glowPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.03)}}
+
 .mock-window{
-  background:var(--card2);
-  border:1px solid rgba(91,91,214,.25);
+  position:relative;z-index:1;
+  background:rgba(13,13,28,.97);
   border-radius:16px;
   overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 60px rgba(91,91,214,.1);
-  transform:rotateY(-6deg) rotateX(3deg);
+  box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.06),inset 0 1px 0 rgba(255,255,255,.08);
+  transform:rotateY(-8deg) rotateX(4deg);
   transform-style:preserve-3d;
-  transition:transform .4s ease;
+  transition:transform .5s ease;
+  animation:mockFloat 7s ease-in-out 1s infinite;
 }
-.hero-mockup:hover .mock-window{transform:rotateY(-2deg) rotateX(1deg)}
+.hero-mockup:hover .mock-window{transform:rotateY(-3deg) rotateX(1.5deg)}
+@keyframes mockFloat{
+  0%,100%{transform:rotateY(-8deg) rotateX(4deg) translateY(0)}
+  50%{transform:rotateY(-8deg) rotateX(4deg) translateY(-10px)}
+}
+
+/* scan line sweeps down */
+.mock-window::after{
+  content:'';position:absolute;left:0;right:0;
+  height:60px;z-index:10;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(91,91,214,.07),transparent);
+  animation:scanline 4s ease-in-out infinite;
+}
+@keyframes scanline{
+  0%{top:-60px;opacity:0}
+  10%{opacity:1}
+  90%{opacity:1}
+  100%{top:110%;opacity:0}
+}
+
 .mock-titlebar{
-  background:rgba(255,255,255,.04);
-  border-bottom:1px solid var(--border2);
-  padding:10px 16px;
+  background:rgba(255,255,255,.035);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:11px 16px;
   display:flex;align-items:center;gap:8px;
 }
-.mock-dot{width:10px;height:10px;border-radius:50%}
-.mock-body{padding:20px}
-.mock-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.mock-dot{width:11px;height:11px;border-radius:50%}
+.mock-body{padding:18px}
+.mock-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
 .mk{
-  background:rgba(255,255,255,.03);border:1px solid var(--border2);
-  border-radius:10px;padding:12px 14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;padding:13px 14px;
+  transition:background .4s;
 }
-.mk-val{font-size:1.3rem;font-weight:900;letter-spacing:-.04em;color:#fff}
-.mk-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
-.mk-chg{font-size:.68rem;color:var(--green);font-weight:700;margin-top:4px}
+.mk.flash{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.2)}
+.mk-val{
+  font-size:1.35rem;font-weight:900;letter-spacing:-.04em;color:#fff;
+  transition:color .3s;
+}
+.mk.flash .mk-val{color:#86efac}
+.mk-lbl{font-size:.66rem;color:var(--muted);margin-top:2px}
+.mk-chg{font-size:.66rem;color:var(--green);font-weight:700;margin-top:4px}
 .mock-chart-area{
-  background:rgba(255,255,255,.02);border:1px solid var(--border2);
-  border-radius:10px;padding:14px;
+  background:rgba(255,255,255,.015);
+  border:1px solid rgba(255,255,255,.05);
+  border-radius:10px;padding:13px;
 }
-.mock-chart-lbl{font-size:.7rem;color:var(--muted);font-weight:600;margin-bottom:8px}
-#hero-svg{width:100%;height:90px}
+.mock-chart-lbl{font-size:.68rem;color:var(--muted);font-weight:600;margin-bottom:8px}
+#hero-canvas-chart{width:100%;height:88px;display:block}
 
 /* hero stats row */
 .hero-stats{
@@ -657,6 +722,9 @@ footer{
     </div>
 
     <div class="hero-mockup">
+      <canvas id="aurora-canvas" width="600" height="600"></canvas>
+      <div class="mock-glow-outer"></div>
+      <div class="mock-border-ring"></div>
       <div class="mock-window">
         <div class="mock-titlebar">
           <div class="mock-dot" style="background:#ff5f57"></div>
@@ -666,17 +734,17 @@ footer{
         </div>
         <div class="mock-body">
           <div class="mock-kpis">
-            <div class="mk">
+            <div class="mk" id="mk-card1">
               <div class="mk-val" id="mk1">$0</div>
               <div class="mk-lbl">Revenue (7d)</div>
               <div class="mk-chg">↑ 18.4%</div>
             </div>
-            <div class="mk">
+            <div class="mk" id="mk-card2">
               <div class="mk-val" id="mk2">0</div>
               <div class="mk-lbl">Subscribers</div>
               <div class="mk-chg">↑ 5.2%</div>
             </div>
-            <div class="mk">
+            <div class="mk" id="mk-card3">
               <div class="mk-val" id="mk3">0</div>
               <div class="mk-lbl">New Fans</div>
               <div class="mk-chg">↑ 23.1%</div>
@@ -684,26 +752,12 @@ footer{
             <div class="mk">
               <div class="mk-val">6</div>
               <div class="mk-lbl">Accounts</div>
-              <div class="mk-chg">● All live</div>
+              <div class="mk-chg" style="color:var(--green)">● All live</div>
             </div>
           </div>
           <div class="mock-chart-area">
             <div class="mock-chart-lbl">Revenue · Last 7 Days</div>
-            <svg id="hero-svg" viewBox="0 0 400 80" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#5b5bd6" stop-opacity=".35"/>
-                  <stop offset="100%" stop-color="#5b5bd6" stop-opacity="0"/>
-                </linearGradient>
-                <linearGradient id="hl" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stop-color="#5b5bd6"/>
-                  <stop offset="100%" stop-color="#8b5cf6"/>
-                </linearGradient>
-              </defs>
-              <path id="h-fill" fill="url(#hg)"/>
-              <path id="h-line" fill="none" stroke="url(#hl)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                stroke-dasharray="800" stroke-dashoffset="800"/>
-            </svg>
+            <canvas id="hero-canvas-chart"></canvas>
           </div>
         </div>
       </div>
@@ -1290,21 +1344,195 @@ footer{
   });
 })();
 
-// ── HERO CHART ──
+// ── AURORA BACKGROUND ──
 (function(){
+  const c=document.getElementById('aurora-canvas');
+  if(!c) return;
+  const ctx=c.getContext('2d');
+  let t=0;
+  const blobs=[
+    {x:.4,y:.4,r:200,hue:240,speed:.003},  // indigo
+    {x:.6,y:.55,r:160,hue:270,speed:.004}, // purple
+    {x:.5,y:.3,r:130,hue:190,speed:.005},  // cyan
+  ];
+  function draw(){
+    ctx.clearRect(0,0,600,600);
+    blobs.forEach(b=>{
+      const x=(b.x+Math.sin(t*b.speed*60+b.hue)*0.12)*600;
+      const y=(b.y+Math.cos(t*b.speed*50+b.hue)*0.1)*600;
+      const g=ctx.createRadialGradient(x,y,0,x,y,b.r);
+      g.addColorStop(0,`hsla(${b.hue},80%,60%,.55)`);
+      g.addColorStop(1,`hsla(${b.hue},80%,40%,0)`);
+      ctx.fillStyle=g;
+      ctx.beginPath();ctx.arc(x,y,b.r,0,Math.PI*2);ctx.fill();
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── HERO CANVAS CHART ──
+(function(){
+  const canvas=document.getElementById('hero-canvas-chart');
+  if(!canvas) return;
+  // size canvas to actual rendered size
+  function resize(){
+    const rect=canvas.getBoundingClientRect();
+    canvas.width=rect.width*window.devicePixelRatio||rect.width;
+    canvas.height=rect.height*window.devicePixelRatio||rect.height;
+  }
+  window.addEventListener('resize',resize);
+
   const pts=[22,38,31,58,47,72,85];
-  const VW=400,VH=80;
   const mx=Math.max(...pts),mn=Math.min(...pts);
-  const coords=pts.map((v,i)=>[i/(pts.length-1)*VW,VH-(v-mn)/(mx-mn)*(VH-12)-6]);
-  const line=coords.map((c,i)=>(i?'L':'M')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
-  document.getElementById('h-fill').setAttribute('d',line+` L${VW},${VH} L0,${VH} Z`);
-  document.getElementById('h-line').setAttribute('d',line);
-  // animate on load
-  setTimeout(()=>{
-    const el=document.getElementById('h-line');
-    el.style.transition='stroke-dashoffset 1.6s ease';
-    el.style.strokeDashoffset='0';
-  },800);
+  let progress=0; // 0→1 draw progress
+  let dotAlpha=0; // head dot pulse
+  let looping=false;
+
+  function getCoords(w,h){
+    return pts.map((v,i)=>[
+      i/(pts.length-1)*w,
+      h-(v-mn)/(mx-mn)*(h*0.78)-h*0.1
+    ]);
+  }
+
+  function buildPath(ctx,coords,prog){
+    // interpolate up to progress
+    const n=coords.length;
+    const total=(n-1)*prog;
+    const seg=Math.floor(total);
+    const frac=total-seg;
+    ctx.beginPath();
+    ctx.moveTo(coords[0][0],coords[0][1]);
+    for(let i=1;i<=Math.min(seg,n-1);i++){
+      ctx.lineTo(coords[i][0],coords[i][1]);
+    }
+    if(seg<n-1 && prog<1){
+      const cx=coords[seg][0]+(coords[seg+1][0]-coords[seg][0])*frac;
+      const cy=coords[seg][1]+(coords[seg+1][1]-coords[seg][1])*frac;
+      ctx.lineTo(cx,cy);
+    }
+  }
+
+  function getHead(coords,prog){
+    const n=coords.length;
+    const total=(n-1)*prog;
+    const seg=Math.floor(total);
+    const frac=total-seg;
+    if(seg>=n-1) return coords[n-1];
+    return[
+      coords[seg][0]+(coords[seg+1][0]-coords[seg][0])*frac,
+      coords[seg][1]+(coords[seg+1][1]-coords[seg][1])*frac
+    ];
+  }
+
+  function draw(){
+    resize();
+    const W=canvas.width, H=canvas.height;
+    const dpr=window.devicePixelRatio||1;
+    const w=W/dpr, h=H/dpr;
+    const ctx=canvas.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+    const coords=getCoords(w,h);
+
+    // ease progress
+    if(progress<1) progress=Math.min(progress+0.018,1);
+
+    // ── gradient fill ──
+    const grad=ctx.createLinearGradient(0,0,0,h);
+    const p=progress;
+    grad.addColorStop(0,`rgba(91,91,214,${0.28*p})`);
+    grad.addColorStop(.6,`rgba(139,92,246,${0.1*p})`);
+    grad.addColorStop(1,'rgba(91,91,214,0)');
+    ctx.save();
+    buildPath(ctx,coords,progress);
+    ctx.lineTo(coords[Math.min(Math.floor((coords.length-1)*progress),coords.length-1)][0],h);
+    // close to start
+    const headX=getHead(coords,progress)[0];
+    ctx.lineTo(headX,h);
+    ctx.lineTo(coords[0][0],h);
+    ctx.closePath();
+    ctx.fillStyle=grad;
+    ctx.fill();
+    ctx.restore();
+
+    // ── outer glow line ──
+    ctx.save();
+    buildPath(ctx,coords,progress);
+    ctx.shadowBlur=18;
+    ctx.shadowColor='rgba(91,91,214,.9)';
+    ctx.strokeStyle='rgba(91,91,214,.25)';
+    ctx.lineWidth=7;
+    ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.stroke();
+    ctx.restore();
+
+    // ── mid glow ──
+    ctx.save();
+    buildPath(ctx,coords,progress);
+    ctx.shadowBlur=8;
+    ctx.shadowColor='rgba(139,92,246,.8)';
+    ctx.strokeStyle='rgba(139,92,246,.5)';
+    ctx.lineWidth=3.5;
+    ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.stroke();
+    ctx.restore();
+
+    // ── crisp line ──
+    ctx.save();
+    buildPath(ctx,coords,progress);
+    ctx.shadowBlur=0;
+    ctx.strokeStyle='rgba(196,181,253,.95)';
+    ctx.lineWidth=1.8;
+    ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.stroke();
+    ctx.restore();
+
+    // ── traveling dot ──
+    if(progress>0.01){
+      const [hx,hy]=getHead(coords,progress);
+      dotAlpha=Math.sin(Date.now()*0.004)*0.4+0.6;
+      // outer pulse
+      ctx.save();
+      ctx.beginPath();ctx.arc(hx,hy,8,0,Math.PI*2);
+      ctx.fillStyle=`rgba(139,92,246,${dotAlpha*0.25})`;
+      ctx.shadowBlur=16;ctx.shadowColor='rgba(139,92,246,.6)';
+      ctx.fill();ctx.restore();
+      // inner dot
+      ctx.save();
+      ctx.beginPath();ctx.arc(hx,hy,3.5,0,Math.PI*2);
+      ctx.fillStyle=`rgba(220,200,255,${dotAlpha})`;
+      ctx.shadowBlur=10;ctx.shadowColor='rgba(196,181,253,1)';
+      ctx.fill();ctx.restore();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ── HERO LIVE TICKER ──
+(function(){
+  let rev=24180, subs=3241, fans=412;
+  const mk1=document.getElementById('mk1');
+  const mk2=document.getElementById('mk2');
+  const mk3=document.getElementById('mk3');
+  const c1=document.getElementById('mk-card1');
+  const c2=document.getElementById('mk-card2');
+  const c3=document.getElementById('mk-card3');
+  function flash(card,el,newVal,prefix){
+    card.classList.add('flash');
+    el.textContent=(prefix||'')+newVal.toLocaleString();
+    setTimeout(()=>card.classList.remove('flash'),700);
+  }
+  // random small increments
+  setInterval(()=>{
+    const which=Math.floor(Math.random()*3);
+    if(which===0){rev+=Math.floor(Math.random()*120+20);flash(c1,mk1,rev,'$');}
+    else if(which===1){subs+=Math.floor(Math.random()*4+1);flash(c2,mk2,subs,'');}
+    else{fans+=Math.floor(Math.random()*3+1);flash(c3,mk3,fans,'');}
+  },2800);
 })();
 
 // ── MAIN REVENUE CHART ──
